@@ -39,7 +39,7 @@ def create_window():
 def json_control_command(direction):
     state = {
         "steering":
-            {direction: 10, "percentage": 100}}
+            {"direction": direction, "percentage": 100}}
 
     return json.dumps(state)
 
