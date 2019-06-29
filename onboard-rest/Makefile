@@ -13,4 +13,7 @@ clean:
 env: .venv/bin/activate
 
 start:
+	FLASK_APP=main.py flask run --host=0.0.0.0
+
+start-local:
 	FLASK_APP=main.py flask run
