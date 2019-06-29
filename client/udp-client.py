@@ -49,15 +49,15 @@ def quit():
     pygame.quit()
     sys.exit()
 
-
-def determine_key(event):
-    if event.key == left_key:
+def determine_key():
+    keys = pygame.key.get_pressed()
+    if keys[left_key]:
         send(json_control_command("left"))
-    elif event.key == right_key:
+    if keys[right_key]:
         send(json_control_command("right"))
-    elif event.key == down_key:
+    if keys[down_key]:
         send(json_control_command("decelerate"))
-    elif event.key == up_key:
+    if keys[up_key]:
         send(json_control_command("accelerate"))
 
 
@@ -67,7 +67,7 @@ def start():
     while True:
         for event in pygame.event.get():
             if event.type == pygame.locals.KEYDOWN:
-                determine_key(event)
+                determine_key()
             elif event.type == pygame.QUIT:
                 quit()
 
