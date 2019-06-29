@@ -3,6 +3,7 @@ import cv2
 stream = cv2.VideoCapture('http://192.168.1.127:8000/stream.mjpg')
 width_height = (960, 540)
 
+
 def start():
     while True:
         grabbed, frame = stream.read()
