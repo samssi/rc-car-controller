@@ -32,17 +32,17 @@ def setup():
 
 def steer(command):
     if command['steering']['direction'] == 'left':
-        GPIO.output(driver_input_1A, GPIO.HIGH)
-        GPIO.output(driver_input_2A, GPIO.LOW)
-    elif command['steering']['direction'] == 'right':
-        GPIO.output(driver_input_1A, GPIO.LOW)
-        GPIO.output(driver_input_2A, GPIO.LOW)
-    elif command['steering']['direction'] == 'accelerate':
         GPIO.output(driver_input_3A, GPIO.HIGH)
         GPIO.output(driver_input_4A, GPIO.LOW)
-    elif command['steering']['direction'] == 'decelerate':
+    elif command['steering']['direction'] == 'right':
         GPIO.output(driver_input_3A, GPIO.LOW)
-        GPIO.output(driver_input_4A, GPIO.LOW)
+        GPIO.output(driver_input_4A, GPIO.HIGH)
+    elif command['steering']['direction'] == 'accelerate':
+        GPIO.output(driver_input_1A, GPIO.LOW)
+        GPIO.output(driver_input_2A, GPIO.HIGH)
+    elif command['steering']['direction'] == 'decelerate':
+        GPIO.output(driver_input_1A, GPIO.HIGH)
+        GPIO.output(driver_input_2A, GPIO.HIGH)
 
 
 def server():
