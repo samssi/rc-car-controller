@@ -43,3 +43,5 @@ offer functions for this applications. REST API will control the GPIO and eg. po
 At some point autonomous driving may be implemented to the onboard computer.
 
 ![wip](/wip.jpg)
+
+[Demo][![Demo]https://img.youtube.com/vi/HN2twrgcHbo/0.jpg)](https://www.youtube.com/watch?v=HN2twrgcHbo)
