@@ -2,47 +2,47 @@ import socket
 import json
 import RPi.GPIO as GPIO
 
-relayIn1Left = 29
-relayIn2Right = 33
-relayIn3Accelerate = 31
-relayIn4Decelerate = 35
-relayIn5 = 37
-relayIn6 = 36
-relayIn7 = 38
-relayIn8 = 40
-
 host_and_port = ("0.0.0.0", 6789)
+
+# See: http://www.ti.com/lit/ds/symlink/l293.pdf
+enable_channel_1_and_2 = 3
+driver_input_1A = 13
+driver_input_2A = 15
+
+enable_channel_3_and_4 = 5
+driver_input_3A = 11
+driver_input_4A = 7
 
 
 def setup():
     GPIO.setmode(GPIO.BOARD)
     GPIO.setwarnings(False)
-    GPIO.setup(relayIn1Left, GPIO.OUT)
-    GPIO.setup(relayIn2Right, GPIO.OUT)
-    GPIO.setup(relayIn3Accelerate, GPIO.OUT)
-    GPIO.setup(relayIn4Decelerate, GPIO.OUT)
-    GPIO.setup(relayIn5, GPIO.OUT)
-    GPIO.setup(relayIn6, GPIO.OUT)
-    GPIO.setup(relayIn7, GPIO.OUT)
-    GPIO.setup(relayIn8, GPIO.OUT)
 
+    GPIO.setup(enable_channel_1_and_2, GPIO.OUT)
+    GPIO.setup(driver_input_1A, GPIO.OUT)
+    GPIO.setup(driver_input_2A, GPIO.OUT)
 
-def relay(status, relay):
-    if status == "off":
-        GPIO.output(relay, GPIO.LOW)
-    elif status == "on":
-        GPIO.output(relay, GPIO.HIGH)
+    GPIO.setup(enable_channel_3_and_4, GPIO.OUT)
+    GPIO.setup(driver_input_3A, GPIO.OUT)
+    GPIO.setup(driver_input_4A, GPIO.OUT)
+
+    GPIO.output(enable_channel_1_and_2, GPIO.HIGH)
+    GPIO.output(enable_channel_3_and_4, GPIO.HIGH)
 
 
 def steer(command):
     if command['steering']['direction'] == 'left':
-        relay('on', relayIn1Left)
+        GPIO.output(driver_input_1A, GPIO.HIGH)
+        GPIO.output(driver_input_2A, GPIO.LOW)
     elif command['steering']['direction'] == 'right':
-        relay('off', relayIn1Left)
+        GPIO.output(driver_input_1A, GPIO.LOW)
+        GPIO.output(driver_input_2A, GPIO.LOW)
     elif command['steering']['direction'] == 'accelerate':
-        relay('on', relayIn3Accelerate)
+        GPIO.output(driver_input_3A, GPIO.HIGH)
+        GPIO.output(driver_input_4A, GPIO.LOW)
     elif command['steering']['direction'] == 'decelerate':
-        relay('off', relayIn3Accelerate)
+        GPIO.output(driver_input_3A, GPIO.LOW)
+        GPIO.output(driver_input_4A, GPIO.LOW)
 
 
 def server():
