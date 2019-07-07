@@ -13,23 +13,23 @@ enable_channel_3_and_4 = 5
 driver_input_3A = 11
 driver_input_4A = 7
 
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
 
-def setup():
-    GPIO.setmode(GPIO.BOARD)
-    GPIO.setwarnings(False)
+GPIO.setup(enable_channel_1_and_2, GPIO.OUT)
+GPIO.setup(driver_input_1A, GPIO.OUT)
+GPIO.setup(driver_input_2A, GPIO.OUT)
 
-    GPIO.setup(enable_channel_1_and_2, GPIO.OUT)
-    GPIO.setup(driver_input_1A, GPIO.OUT)
-    GPIO.setup(driver_input_2A, GPIO.OUT)
+GPIO.setup(enable_channel_3_and_4, GPIO.OUT)
+GPIO.setup(driver_input_3A, GPIO.OUT)
+GPIO.setup(driver_input_4A, GPIO.OUT)
 
-    GPIO.setup(enable_channel_3_and_4, GPIO.OUT)
-    GPIO.setup(driver_input_3A, GPIO.OUT)
-    GPIO.setup(driver_input_4A, GPIO.OUT)
+GPIO.output(enable_channel_1_and_2, GPIO.HIGH)
+GPIO.output(enable_channel_3_and_4, GPIO.HIGH)
 
-    GPIO.output(enable_channel_1_and_2, GPIO.HIGH)
-    GPIO.output(enable_channel_3_and_4, GPIO.HIGH)
+driver_input_1A_pwm = GPIO.PWM(driver_input_1A, 7500)
 
-
+# DC electric motors: 5-10 kHz or higher
 def steer(command):
     if command['steering']['direction'] == 'left':
         GPIO.output(driver_input_3A, GPIO.HIGH)
@@ -38,11 +38,11 @@ def steer(command):
         GPIO.output(driver_input_3A, GPIO.LOW)
         GPIO.output(driver_input_4A, GPIO.HIGH)
     elif command['steering']['direction'] == 'accelerate':
-        GPIO.output(driver_input_1A, GPIO.LOW)
-        GPIO.output(driver_input_2A, GPIO.HIGH)
+        GPIO.output(driver_input_2A, GPIO.LOW)
+        driver_input_1A_pwm.start(command['steering']['percentage'])
     elif command['steering']['direction'] == 'decelerate':
-        GPIO.output(driver_input_1A, GPIO.HIGH)
-        GPIO.output(driver_input_2A, GPIO.HIGH)
+        driver_input_1A_pwm.stop()
+        GPIO.output(driver_input_2A, GPIO.LOW)
 
 
 def server():
@@ -64,5 +64,5 @@ def run(server):
         server.close()
         print('\nUDP server shutdown')
 
-setup()
+
 run(server())
