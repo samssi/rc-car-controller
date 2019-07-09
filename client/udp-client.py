@@ -4,14 +4,17 @@ import pygame
 import pygame.locals
 import sys
 import cv2
+from config import Settings
 
-udp_client_enabled = False
-video_enabled = False
-width_height = (960, 540)
+settings = Settings('settings.ini')
 
-stream = cv2.VideoCapture('http://192.168.1.127:8000/stream.mjpg')
+udp_client_enabled = settings.getParser().getboolean('default', 'udp_client_enabled')
+video_enabled = settings.getParser().getboolean('default', 'video_streaming_enabled')
+width_height = (settings.getParser().getint('default', 'window_width'), settings.getParser().getint('default', 'window_height'))
 
-#host_and_port = ("127.0.0.1", 6789)
+if udp_client_enabled:
+    stream = cv2.VideoCapture('http://192.168.1.127:8000/stream.mjpg')
+
 host_and_port = ("192.168.1.127", 6789)
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
@@ -108,3 +111,4 @@ def start():
 
 if __name__ == "__main__":
     start()
+
