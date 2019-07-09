@@ -5,12 +5,16 @@ import pygame.locals
 import sys
 import cv2
 
-stream = cv2.VideoCapture('http://192.168.1.127:8000/stream.mjpg')
+udp_client_enabled = False
+video_enabled = False
 width_height = (960, 540)
+
+stream = cv2.VideoCapture('http://192.168.1.127:8000/stream.mjpg')
 
 #host_and_port = ("127.0.0.1", 6789)
 host_and_port = ("192.168.1.127", 6789)
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
 
 left_key = pygame.K_a
 right_key = pygame.K_d
@@ -48,7 +52,9 @@ def json_control_command(direction):
 
 
 def send(command):
-    client.sendto(bytes(command, 'utf8'), host_and_port)
+    if udp_client_enabled:
+        client.sendto(bytes(command, 'utf8'), host_and_port)
+    print(command)
 
 
 def quit():
@@ -68,12 +74,10 @@ def determine_key():
     if keys[down_key]:
         if percentage < 100:
             percentage = percentage + 10
-            print(percentage)
         send(json_control_command("accelerate"))
     if keys[up_key]:
         if percentage > -100:
             percentage = percentage - 10
-            print(percentage)
         send(json_control_command("accelerate"))
 
 
@@ -94,9 +98,11 @@ def start():
     print('Use WASD to send control commands. Other keys will terminate the client')
     window = init()
     while True:
-        frame = pygame.surfarray.make_surface(read_camera_stream())
+        if video_enabled:
+            frame = pygame.surfarray.make_surface(read_camera_stream())
+            window.blit(frame, (0,0))
+
         listen_keyboard()
-        window.blit(frame, (0,0))
         pygame.display.update()
 
 
