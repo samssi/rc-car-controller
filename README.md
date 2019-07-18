@@ -44,7 +44,7 @@ https://www.raspberrypi.org/documentation/hardware/camera/
 onboard-udp is based on Python socket and is a very simple implementation of UDP server. Package loss
 is not an issue when sending control commands and protocol must be very responsive so UDP seems like
 a right choice for command input. Onboard UDP receives JSON data packets and transforms those into
-GPIO/PWM signals which are sent to L293 MCU (motor control unit.) This microcontroller will handle
+GPIO/PWM signals which are sent to L293 MCU (see: http://www.ti.com/lit/ds/symlink/l293.pdf) This microcontroller will handle
 driving the DC motors.
 
 ## onboard-rest
