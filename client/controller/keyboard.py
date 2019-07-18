@@ -2,13 +2,14 @@ import pygame
 import json
 from udp import udp
 from event import KeyboardControlState
+from config import Settings
 
-left_key = pygame.K_a
-right_key = pygame.K_d
-up_key = pygame.K_w
-down_key = pygame.K_s
-duty_cycle_up = pygame.K_r
-duty_cycle_down = pygame.K_e
+settings = Settings('settings.ini')
+
+left_key = settings.getParser().getint('default', 'keyboard_left')
+right_key = settings.getParser().getint('default', 'keyboard_right')
+up_key = settings.getParser().getint('default', 'keyboard_up')
+down_key = settings.getParser().getint('default', 'keyboard_down')
 
 keyboardControlState = KeyboardControlState()
 
