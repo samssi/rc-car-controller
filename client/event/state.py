@@ -12,6 +12,7 @@ class Singleton(type):
 
 class KeyboardControlState(metaclass=Singleton):
     def __init__(self):
+        self.keyboard_event_emit_timer = 250
         self.direction = 0
         self.steering = 0
         self.keyboard_control_event = pygame.USEREVENT + 1
@@ -29,6 +30,7 @@ class KeyboardControlState(metaclass=Singleton):
         return new if 100 >= current + new >= -100 else 0
 
     def _to_event_queue(self):
+        pygame.time.set_timer(self.keyboard_control_event, self.keyboard_event_emit_timer)
         event = pygame.event.Event(self.keyboard_control_event)
         pygame.event.post(event)
 
