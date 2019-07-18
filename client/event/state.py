@@ -1,5 +1,8 @@
 import json
 import pygame
+from config import Settings
+
+settings = Settings('settings.ini')
 
 class Singleton(type):
     _instances = {}
@@ -12,7 +15,7 @@ class Singleton(type):
 
 class KeyboardControlState(metaclass=Singleton):
     def __init__(self):
-        self.keyboard_event_emit_timer = 250
+        self.keyboard_event_emit_timer = settings.getParser().getint('default', 'udp_event_emit_timer')
         self.direction = 0
         self.steering = 0
         self.keyboard_control_event = pygame.USEREVENT + 1
