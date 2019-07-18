@@ -2,6 +2,7 @@ import pygame
 import pygame.locals
 import sys
 import cv2
+from udp import udp
 from config import Settings
 from controller import keyboard
 from event import KeyboardControlState
@@ -46,7 +47,7 @@ def listen_events():
         elif event.type == pygame.QUIT:
             shutdown()
         elif event.type == keyboardControlState.keyboard_control_event:
-            print(f'from queue: {keyboardControlState.to_control_command()}')
+            udp.send(keyboardControlState.to_control_command())
         elif event.type == keyboardControlState.keyboard_reset_event:
             _handle_keyboard_reset_event()
             keyboardControlState.new_direction_event = False
