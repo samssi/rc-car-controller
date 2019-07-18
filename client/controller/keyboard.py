@@ -1,6 +1,7 @@
 import pygame
 import json
 from udp import udp
+from event import KeyboardControlState
 
 left_key = pygame.K_a
 right_key = pygame.K_d
@@ -10,6 +11,8 @@ duty_cycle_up = pygame.K_r
 duty_cycle_down = pygame.K_e
 percentage = 100
 
+keyboardControlState = KeyboardControlState()
+
 
 def init_keyboard():
     pygame.key.set_repeat(1, 10)
@@ -18,18 +21,21 @@ def init_keyboard():
 def determine_key():
     global percentage
     keys = pygame.key.get_pressed()
+
     if keys[left_key]:
-        udp.send(json_control_command("left"))
+        keyboardControlState.update_direction(-10)
+        print(keyboardControlState.to_control_command())
     if keys[right_key]:
-        udp.send(json_control_command("right"))
+        keyboardControlState.update_direction(10)
+        print(keyboardControlState.to_control_command())
+
     if keys[down_key]:
-        if percentage < 100:
-            percentage = percentage + 10
-        udp.send(json_control_command("accelerate"))
+        keyboardControlState.update_steering(-10)
+        print(keyboardControlState.to_control_command())
+        #udp.send(json_control_command("accelerate"))
     if keys[up_key]:
-        if percentage > -100:
-            percentage = percentage - 10
-            udp.send(json_control_command("accelerate"))
+        keyboardControlState.update_steering(10)
+        print(keyboardControlState.to_control_command())
 
 
 def json_control_command(direction):
