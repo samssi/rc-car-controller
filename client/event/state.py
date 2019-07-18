@@ -4,6 +4,7 @@ from config import Settings
 
 settings = Settings('settings.ini')
 
+
 class Singleton(type):
     _instances = {}
 
