@@ -31,10 +31,3 @@ def determine_key():
     if keys[up_key]:
         keyboardControlState.update_steering(10)
 
-
-def json_control_command(direction):
-    state = {
-        "steering":
-            {"direction": direction, "percentage": percentage}}
-
-    return json.dumps(state)
