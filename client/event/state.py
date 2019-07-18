@@ -15,8 +15,8 @@ class Singleton(type):
 
 class KeyboardControlState(metaclass=Singleton):
     def __init__(self):
-        self.keyboard_event_emit_timer = settings.getParser().getint('default', 'udp_event_emit_timer')
-        self.keyboard_control_timer = 250
+        self.keyboard_event_emit_timer = settings.getParser().getint('default', 'udp_event_emit_timer_interval')
+        self.keyboard_control_timer = settings.getParser().getint('default', 'keyboard_reset_timer_interval')
         self.new_direction_event = False
         self.new_steering_event = False
         self.direction = 0
