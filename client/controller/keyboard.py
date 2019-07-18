@@ -24,18 +24,14 @@ def determine_key():
 
     if keys[left_key]:
         keyboardControlState.update_direction(-10)
-        print(keyboardControlState.to_control_command())
     if keys[right_key]:
         keyboardControlState.update_direction(10)
-        print(keyboardControlState.to_control_command())
 
     if keys[down_key]:
         keyboardControlState.update_steering(-10)
-        print(keyboardControlState.to_control_command())
         #udp.send(json_control_command("accelerate"))
     if keys[up_key]:
         keyboardControlState.update_steering(10)
-        print(keyboardControlState.to_control_command())
 
 
 def json_control_command(direction):
