@@ -23,3 +23,6 @@ class CarState(metaclass=Singleton):
 
     def cutoff_threshold_passed(self):
         return self.cutoff_threshold() < self.current_time_in_millis()
+
+    def update_time(self):
+        self.last_message_received = self.current_time_in_millis()

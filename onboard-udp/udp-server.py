@@ -87,6 +87,7 @@ def run(server):
     try:
         while True:
             data, _ = server.recvfrom(1024)
+            carState.update_time()
             print(f"UDP message received: {data}")
             json_dict = json.loads(data)
             steer(json_dict)
