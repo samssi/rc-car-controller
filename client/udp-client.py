@@ -1,10 +1,9 @@
-import socket
-import json
 import pygame
 import pygame.locals
 import sys
 import cv2
 from config import Settings
+from controller import keyboard
 
 settings = Settings('settings.ini')
 
@@ -12,84 +11,37 @@ udp_client_enabled = settings.getParser().getboolean('default', 'udp_client_enab
 video_enabled = settings.getParser().getboolean('default', 'video_streaming_enabled')
 width_height = (settings.getParser().getint('default', 'window_width'), settings.getParser().getint('default', 'window_height'))
 
-if udp_client_enabled:
+if video_enabled:
     stream = cv2.VideoCapture('http://192.168.1.127:8000/stream.mjpg')
-
-host_and_port = ("192.168.1.127", 6789)
-client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-
-left_key = pygame.K_a
-right_key = pygame.K_d
-up_key = pygame.K_w
-down_key = pygame.K_s
-duty_cycle_up = pygame.K_r
-duty_cycle_down = pygame.K_e
-percentage = 100
 
 
 def init():
     pygame.init()
-    init_keyboard()
+    keyboard.init_keyboard()
     return create_window()
-
-
-def init_keyboard():
-    pygame.key.set_repeat(1, 10)
 
 
 def create_window():
     black_color = (0, 0, 0)
     window = pygame.display.set_mode(width_height, 0, 32)
     window.fill(black_color)
-    init_keyboard()
+    keyboard.init_keyboard()
     return window
 
 
-def json_control_command(direction):
-    state = {
-        "steering":
-            {"direction": direction, "percentage": percentage}}
-
-    return json.dumps(state)
-
-
-def send(command):
-    if udp_client_enabled:
-        client.sendto(bytes(command, 'utf8'), host_and_port)
-    print(command)
-
-
-def quit():
+def shutdown():
     print("Exiting")
     pygame.quit()
     cv2.destroyAllWindows()
     sys.exit()
 
 
-def determine_key():
-    global percentage
-    keys = pygame.key.get_pressed()
-    if keys[left_key]:
-        send(json_control_command("left"))
-    if keys[right_key]:
-        send(json_control_command("right"))
-    if keys[down_key]:
-        if percentage < 100:
-            percentage = percentage + 10
-        send(json_control_command("accelerate"))
-    if keys[up_key]:
-        if percentage > -100:
-            percentage = percentage - 10
-        send(json_control_command("accelerate"))
-
-
 def listen_keyboard():
     for event in pygame.event.get():
         if event.type == pygame.locals.KEYDOWN:
-            determine_key()
+            keyboard.determine_key()
         elif event.type == pygame.QUIT:
-            quit()
+            shutdown()
 
 
 def read_camera_stream():
@@ -103,7 +55,7 @@ def start():
     while True:
         if video_enabled:
             frame = pygame.surfarray.make_surface(read_camera_stream())
-            window.blit(frame, (0,0))
+            window.blit(frame, (0, 0))
 
         listen_keyboard()
         pygame.display.update()
