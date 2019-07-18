@@ -25,22 +25,22 @@ enable_channel_3_and_4 = 5
 driver_input_3A = 11
 driver_input_4A = 7
 
-#GPIO.setmode(GPIO.BOARD)
-#GPIO.setwarnings(False)
-#
-#GPIO.setup(enable_channel_1_and_2, GPIO.OUT)
-#GPIO.setup(driver_input_1A, GPIO.OUT)
-#GPIO.setup(driver_input_2A, GPIO.OUT)
-#
-#GPIO.setup(enable_channel_3_and_4, GPIO.OUT)
-#GPIO.setup(driver_input_3A, GPIO.OUT)
-#GPIO.setup(driver_input_4A, GPIO.OUT)
-#
-#GPIO.output(enable_channel_1_and_2, GPIO.HIGH)
-#GPIO.output(enable_channel_3_and_4, GPIO.HIGH)
+GPIO.setmode(GPIO.BOARD)
+GPIO.setwarnings(False)
+
+GPIO.setup(enable_channel_1_and_2, GPIO.OUT)
+GPIO.setup(driver_input_1A, GPIO.OUT)
+GPIO.setup(driver_input_2A, GPIO.OUT)
+
+GPIO.setup(enable_channel_3_and_4, GPIO.OUT)
+GPIO.setup(driver_input_3A, GPIO.OUT)
+GPIO.setup(driver_input_4A, GPIO.OUT)
+
+GPIO.output(enable_channel_1_and_2, GPIO.HIGH)
+GPIO.output(enable_channel_3_and_4, GPIO.HIGH)
 
 # DC electric motors: 5-10 kHz or higher
-#driver_input_1A_pwm = GPIO.PWM(driver_input_1A, 7500)
+driver_input_1A_pwm = GPIO.PWM(driver_input_1A, 7500)
 
 
 def cut_engine():
