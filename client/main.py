@@ -47,6 +47,26 @@ def listen_events():
             shutdown()
         elif event.type == keyboardControlState.keyboard_control_event:
             print(f'from queue: {keyboardControlState.to_control_command()}')
+        elif event.type == keyboardControlState.keyboard_reset_event:
+            _handle_keyboard_reset_event()
+            keyboardControlState.new_direction_event = False
+            keyboardControlState.new_steering_event = False
+
+
+def _handle_keyboard_reset_event():
+    print(f'new direction event: {keyboardControlState.new_direction_event}')
+    print(f'new steering event: {keyboardControlState.new_steering_event}')
+    if not keyboardControlState.new_direction_event:
+        if keyboardControlState.direction > 0:
+            keyboardControlState.update_direction(-10)
+        elif keyboardControlState.direction < 0:
+            keyboardControlState.update_direction(10)
+
+    if not keyboardControlState.new_steering_event:
+        if keyboardControlState.steering > 0:
+            keyboardControlState.update_steering(-10)
+        elif keyboardControlState.steering < 0:
+            keyboardControlState.update_steering(10)
 
 
 def read_camera_stream():
