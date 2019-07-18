@@ -10,9 +10,10 @@ settings = Settings('settings.ini')
 udp_client_enabled = settings.getParser().getboolean('default', 'udp_client_enabled')
 video_enabled = settings.getParser().getboolean('default', 'video_streaming_enabled')
 width_height = (settings.getParser().getint('default', 'window_width'), settings.getParser().getint('default', 'window_height'))
+video_stream_url = (settings.getParser().get('default', 'video_stream_url'))
 
 if video_enabled:
-    stream = cv2.VideoCapture('http://192.168.1.127:8000/stream.mjpg')
+    stream = cv2.VideoCapture(video_stream_url)
 
 
 def init():
