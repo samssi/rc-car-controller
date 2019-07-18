@@ -1,14 +1,16 @@
 import socket
 from config import Settings
 
-host_and_port = ("192.168.1.127", 6789)
-client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
 settings = Settings('settings.ini')
 udp_client_enabled = settings.getParser().getboolean('default', 'udp_client_enabled')
+udp_host = settings.getParser().get('default', 'udp_host')
+udp_port = settings.getParser().get('default', 'udp_port')
+
+host_and_port = (udp_host, udp_port)
+client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
 
 def send(command):
     if udp_client_enabled:
         client.sendto(bytes(command, 'utf8'), host_and_port)
-    print(command)
+    print(f'Sending UDP message to {host_and_port}: {command}')
