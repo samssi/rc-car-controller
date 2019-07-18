@@ -9,7 +9,6 @@ up_key = pygame.K_w
 down_key = pygame.K_s
 duty_cycle_up = pygame.K_r
 duty_cycle_down = pygame.K_e
-percentage = 100
 
 keyboardControlState = KeyboardControlState()
 
@@ -19,7 +18,6 @@ def init_keyboard():
 
 
 def determine_key():
-    global percentage
     keys = pygame.key.get_pressed()
 
     if keys[left_key]:
