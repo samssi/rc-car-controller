@@ -4,8 +4,10 @@ import sys
 import cv2
 from config import Settings
 from controller import keyboard
+from event import KeyboardControlState
 
 settings = Settings('settings.ini')
+keyboardControlState = KeyboardControlState()
 
 udp_client_enabled = settings.getParser().getboolean('default', 'udp_client_enabled')
 video_enabled = settings.getParser().getboolean('default', 'video_streaming_enabled')
@@ -37,12 +39,14 @@ def shutdown():
     sys.exit()
 
 
-def listen_keyboard():
+def listen_events():
     for event in pygame.event.get():
         if event.type == pygame.locals.KEYDOWN:
             keyboard.determine_key()
         elif event.type == pygame.QUIT:
             shutdown()
+        elif event.type == keyboardControlState.keyboard_control_event:
+            print(f'from queue: {keyboardControlState.to_control_command()}')
 
 
 def read_camera_stream():
@@ -58,7 +62,7 @@ def start():
             frame = pygame.surfarray.make_surface(read_camera_stream())
             window.blit(frame, (0, 0))
 
-        listen_keyboard()
+        listen_events()
         pygame.display.update()
 
 
