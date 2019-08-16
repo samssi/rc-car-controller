@@ -44,22 +44,31 @@ driver_input_1A_pwm = GPIO.PWM(driver_input_1A, 7500)
 
 
 def cut_engine():
-    print('Engine cut!')
+    print("No UDP control messages received! Cutting engine!")
+    GPIO.output(driver_input_1A, GPIO.LOW)
+    GPIO.output(driver_input_2A, GPIO.LOW)
+    GPIO.output(driver_input_3A, GPIO.LOW)
+    GPIO.output(driver_input_4A, GPIO.LOW)
 
 
 def steer(command):
-    if int(command['control']['direction']) < 0: #left
+    if int(command['control']['steering']) > 0: #left
+        print('go left')
         GPIO.output(driver_input_3A, GPIO.HIGH)
         GPIO.output(driver_input_4A, GPIO.LOW)
-    elif int(command['control']['direction']) > 0: #right
+    elif int(command['control']['steering']) < 0: #right
+        print('go right')
         GPIO.output(driver_input_3A, GPIO.LOW)
         GPIO.output(driver_input_4A, GPIO.HIGH)
-    elif int(command['control']['direction'] ) > 0: #accelerate'
+    elif int(command['control']['direction']) > 0: #accelerate'
+        print('accelerate')
         GPIO.output(driver_input_2A, GPIO.LOW)
-        driver_input_1A_pwm.start(int(command['control']['direction']))
+        driver_input_1A_pwm.start(float(command['control']['direction']))
     elif command['control']['direction'] < 0: #decelerate
+        print('decelerate')
         driver_input_1A_pwm.stop()
         GPIO.output(driver_input_2A, GPIO.LOW)
+
 
 
 def server():
