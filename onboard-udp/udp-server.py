@@ -46,17 +46,18 @@ driver_input_1A_pwm = GPIO.PWM(driver_input_1A, 7500)
 def cut_engine():
     print('Engine cut!')
 
+
 def steer(command):
-    if command['steering']['direction'] == 'left':
+    if int(command['control']['direction']) < 0: #left
         GPIO.output(driver_input_3A, GPIO.HIGH)
         GPIO.output(driver_input_4A, GPIO.LOW)
-    elif command['steering']['direction'] == 'right':
+    elif int(command['control']['direction']) > 0: #right
         GPIO.output(driver_input_3A, GPIO.LOW)
         GPIO.output(driver_input_4A, GPIO.HIGH)
-    elif command['steering']['direction'] == 'accelerate':
+    elif int(command['control']['direction'] ) > 0: #accelerate'
         GPIO.output(driver_input_2A, GPIO.LOW)
-        driver_input_1A_pwm.start(command['steering']['percentage'])
-    elif command['steering']['direction'] == 'decelerate':
+        driver_input_1A_pwm.start(int(command['control']['direction']))
+    elif command['control']['direction'] < 0: #decelerate
         driver_input_1A_pwm.stop()
         GPIO.output(driver_input_2A, GPIO.LOW)
 
