@@ -27,7 +27,7 @@ def init():
 
 def create_window():
     black_color = (0, 0, 0)
-    window = pygame.display.set_mode(width_height, 0, 32)
+    window = pygame.display.set_mode(width_height)
     window.fill(black_color)
     keyboard.init_keyboard()
     return window
@@ -80,7 +80,13 @@ def start():
     window = init()
     while True:
         if video_enabled:
-            frame = pygame.surfarray.make_surface(read_camera_stream())
+            frame = read_camera_stream()
+
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            frame = cv2.resize(frame, width_height)
+            frame = frame.swapaxes(0,1)
+            frame = pygame.surfarray.make_surface(frame)
+
             window.blit(frame, (0, 0))
 
         listen_events()
