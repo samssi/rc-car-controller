@@ -49,6 +49,7 @@ def cut_engine():
     GPIO.output(driver_input_2A, GPIO.LOW)
     GPIO.output(driver_input_3A, GPIO.LOW)
     GPIO.output(driver_input_4A, GPIO.LOW)
+    driver_input_1A_pwm.stop()
 
 
 def steer(command):
