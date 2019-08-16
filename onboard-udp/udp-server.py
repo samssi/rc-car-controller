@@ -2,7 +2,7 @@ import socket
 import json
 import time
 import threading
-#import RPi.GPIO as GPIO
+import RPi.GPIO as GPIO
 from config import Settings
 from state import CarState
 
