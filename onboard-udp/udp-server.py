@@ -61,7 +61,8 @@ def steer(command):
         print('go right')
         GPIO.output(driver_input_3A, GPIO.LOW)
         GPIO.output(driver_input_4A, GPIO.HIGH)
-    elif int(command['control']['direction']) > 0: #accelerate'
+
+    if int(command['control']['direction']) > 0: #accelerate'
         print('accelerate')
         GPIO.output(driver_input_2A, GPIO.LOW)
         driver_input_1A_pwm.start(float(command['control']['direction']))
