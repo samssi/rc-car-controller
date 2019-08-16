@@ -40,7 +40,11 @@ GPIO.output(enable_channel_1_and_2, GPIO.HIGH)
 GPIO.output(enable_channel_3_and_4, GPIO.HIGH)
 
 # DC electric motors: 5-10 kHz or higher
-driver_input_1A_pwm = GPIO.PWM(driver_input_1A, 7500)
+frequency = 20000
+driver_input_1A_pwm = GPIO.PWM(driver_input_1A, frequency)
+driver_input_2A_pwm = GPIO.PWM(driver_input_2A, frequency)
+driver_input_3A_pwm = GPIO.PWM(driver_input_3A, frequency)
+driver_input_4A_pwm = GPIO.PWM(driver_input_4A, frequency)
 
 
 def cut_engine():
@@ -52,24 +56,46 @@ def cut_engine():
     driver_input_1A_pwm.stop()
 
 
+def stop_dc(driver_pwm):
+    driver_pwm.stop()
+
+
+def handle_steering(driver_pwm, driver_input, dc):
+    GPIO.output(driver_input, GPIO.LOW)
+    if dc == 0:
+        stop_dc(driver_input_3A_pwm)
+        stop_dc(driver_input_4A_pwm)
+    else:
+        driver_pwm.start(dc)
+
+
+def handle_acceleration(driver_pwm, driver_input, dc):
+    GPIO.output(driver_input, GPIO.LOW)
+    if dc == 0:
+        stop_dc(driver_input_1A_pwm)
+        stop_dc(driver_input_2A_pwm)
+    else:
+        driver_pwm.start(dc)
+
+
 def steer(command):
+    steering = float(command['control']['steering'])
+
     if int(command['control']['steering']) > 0: #left
         print('go left')
-        GPIO.output(driver_input_3A, GPIO.HIGH)
-        GPIO.output(driver_input_4A, GPIO.LOW)
+        handle_steering(driver_input_3A_pwm, driver_input_4A, abs(steering))
     elif int(command['control']['steering']) < 0: #right
         print('go right')
-        GPIO.output(driver_input_3A, GPIO.LOW)
-        GPIO.output(driver_input_4A, GPIO.HIGH)
+        handle_steering(driver_input_4A_pwm, driver_input_3A, abs(steering))
 
-    if int(command['control']['direction']) > 0: #accelerate'
+    acceleration = float(command['control']['direction'])
+
+    if int(command['control']['direction']) >= 0: #accelerate
         print('accelerate')
-        GPIO.output(driver_input_2A, GPIO.LOW)
-        driver_input_1A_pwm.start(float(command['control']['direction']))
+        handle_acceleration(driver_input_2A_pwm, driver_input_1A, abs(acceleration))
     elif command['control']['direction'] < 0: #decelerate
         print('decelerate')
-        driver_input_1A_pwm.stop()
-        GPIO.output(driver_input_2A, GPIO.LOW)
+        handle_acceleration(driver_input_1A_pwm, driver_input_2A, abs(acceleration))
 
 
 
