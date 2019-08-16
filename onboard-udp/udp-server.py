@@ -1,8 +1,20 @@
 import socket
 import json
+import time
+import threading
 import RPi.GPIO as GPIO
+from config import Settings
+from state import CarState
 
-host_and_port = ("0.0.0.0", 6789)
+carState = CarState()
+
+settings = Settings('settings.ini')
+host = settings.getParser().get('default', 'udp_server_accept_host')
+port = settings.getParser().getint('default', 'udp_server_port')
+
+cutoff_polling_frequency_in_secs = settings.getParser().getint('default', 'cutoff_polling_frequency_in_secs')
+
+host_and_port = (host, port)
 
 # See: http://www.ti.com/lit/ds/symlink/l293.pdf
 enable_channel_1_and_2 = 3
@@ -27,22 +39,63 @@ GPIO.setup(driver_input_4A, GPIO.OUT)
 GPIO.output(enable_channel_1_and_2, GPIO.HIGH)
 GPIO.output(enable_channel_3_and_4, GPIO.HIGH)
 
-driver_input_1A_pwm = GPIO.PWM(driver_input_1A, 7500)
-
 # DC electric motors: 5-10 kHz or higher
+frequency = 20000
+driver_input_1A_pwm = GPIO.PWM(driver_input_1A, frequency)
+driver_input_2A_pwm = GPIO.PWM(driver_input_2A, frequency)
+
+
+def cut_engine():
+    print("No UDP control messages received! Cutting engine!")
+    GPIO.output(driver_input_1A, GPIO.LOW)
+    GPIO.output(driver_input_2A, GPIO.LOW)
+    GPIO.output(driver_input_3A, GPIO.LOW)
+    GPIO.output(driver_input_4A, GPIO.LOW)
+    driver_input_1A_pwm.stop()
+
+
+def stop_dc(driver_pwm):
+    driver_pwm.stop()
+
+
+def handle_steering(driver_input_1, driver_input_2, dc):
+    GPIO.output(driver_input_1, GPIO.LOW)
+    if dc == 0:
+        GPIO.output(driver_input_1, GPIO.HIGH)
+        GPIO.output(driver_input_2, GPIO.HIGH)
+    else:
+        GPIO.output(driver_input_1, GPIO.LOW)
+        GPIO.output(driver_input_2, GPIO.HIGH)
+
+
+def handle_acceleration(driver_pwm, driver_input, dc):
+    GPIO.output(driver_input, GPIO.LOW)
+    if dc == 0:
+        stop_dc(driver_input_1A_pwm)
+        stop_dc(driver_input_2A_pwm)
+    else:
+        driver_pwm.start(dc)
+
+
 def steer(command):
-    if command['steering']['direction'] == 'left':
-        GPIO.output(driver_input_3A, GPIO.HIGH)
-        GPIO.output(driver_input_4A, GPIO.LOW)
-    elif command['steering']['direction'] == 'right':
-        GPIO.output(driver_input_3A, GPIO.LOW)
-        GPIO.output(driver_input_4A, GPIO.HIGH)
-    elif command['steering']['direction'] == 'accelerate':
-        GPIO.output(driver_input_2A, GPIO.LOW)
-        driver_input_1A_pwm.start(command['steering']['percentage'])
-    elif command['steering']['direction'] == 'decelerate':
-        driver_input_1A_pwm.stop()
-        GPIO.output(driver_input_2A, GPIO.LOW)
+    steering = float(command['control']['steering'])
+
+    if int(command['control']['steering']) >= 0: #left
+        print('go left')
+        handle_steering(driver_input_4A, driver_input_3A, abs(steering))
+    elif int(command['control']['steering']) < 0: #right
+        print('go right')
+        handle_steering(driver_input_3A, driver_input_4A, abs(steering))
+
+    acceleration = float(command['control']['direction'])
+
+    if int(command['control']['direction']) >= 0: #accelerate
+        print('accelerate')
+        handle_acceleration(driver_input_2A_pwm, driver_input_1A, abs(acceleration))
+    elif command['control']['direction'] < 0: #decelerate
+        print('decelerate')
+        handle_acceleration(driver_input_1A_pwm, driver_input_2A, abs(acceleration))
+
 
 
 def server():
@@ -51,18 +104,37 @@ def server():
     return server
 
 
+def cutoff():
+    thread = threading.currentThread()
+
+    while getattr(thread, "do_run", True):
+        if carState.cutoff_threshold_passed():
+            cut_engine()
+
+        time.sleep(cutoff_polling_frequency_in_secs)
+
+    print('Cutoff thread finished')
+
+
 def run(server):
     print("Starting onboard UDP server")
+    cutoff_thread = threading.Thread(target=cutoff)
+    cutoff_thread.start()
+
     try:
         while True:
             data, _ = server.recvfrom(1024)
+            carState.update_time()
             print(f"UDP message received: {data}")
             json_dict = json.loads(data)
             steer(json_dict)
 
     except KeyboardInterrupt:
         server.close()
+        cutoff_thread.do_run = False
+        cutoff_thread.join()
         print('\nUDP server shutdown')
 
 
-run(server())
+if __name__ == "__main__":
+    run(server())

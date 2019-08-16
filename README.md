@@ -10,6 +10,20 @@ This project provides all components as monorepo.
 
 ![architecture](/architecture.jpg)
 
+### Client/Server messaging
+
+Client server exchange with UDP should cutoff all DC motors if no message is received within given
+configurable time frame (eg. 1 seconds) to prevent uncontrollable acceleration or steering when
+UDP connection is lost.
+
+Client/Server must follow this specification:
+
+* Client should maintain latest control message state and send it through within onboard server side
+cutoff time frame
+* Server side stop timer will reset after each event
+* Server side will cutoff DC motors if no message received within the time frame and will resume
+when connection is restored with the latest received client message
+
 ## client
 
 Client can be made to support multiple input methods. Keyboard, joystick and even autonomous operations.
@@ -17,7 +31,7 @@ Current client is developed with OpenCV for the video and pygame for input and d
 stream.
 
 Autonomous driving can be implemented to the client side or to the onboard
-computer.
+computer. 
 
 ## onboard-camera
 
@@ -30,7 +44,7 @@ https://www.raspberrypi.org/documentation/hardware/camera/
 onboard-udp is based on Python socket and is a very simple implementation of UDP server. Package loss
 is not an issue when sending control commands and protocol must be very responsive so UDP seems like
 a right choice for command input. Onboard UDP receives JSON data packets and transforms those into
-GPIO/PWM signals which are sent to L293 MCU (microcontroller unit.) This microcontroller will handle
+GPIO/PWM signals which are sent to L293 MCU (see: http://www.ti.com/lit/ds/symlink/l293.pdf) This microcontroller will handle
 driving the DC motors.
 
 ## onboard-rest
