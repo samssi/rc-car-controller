@@ -30,12 +30,17 @@ class KeyboardControlState(metaclass=Singleton):
         self.new_direction_event = True
 
     def update_steering(self, steering):
-        self.steering += self._check_range(steering, self.steering)
+        self.steering += self._check_steering_range_hack(steering, self.steering)
         self.new_steering_event = True
 
     @staticmethod
     def _check_range(new, current):
         return new if 100 >= current + new >= -100 else 0
+
+    # This is just a hack for limitation for the the steering of current car physical chassis
+    @staticmethod
+    def _check_steering_range_hack(new, current):
+        return new if 10 >= current + new >= -10 else 0
 
     def to_event_queue(self):
         pygame.time.set_timer(self.keyboard_reset_event, self.keyboard_control_timer)
