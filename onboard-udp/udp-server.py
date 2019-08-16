@@ -43,8 +43,6 @@ GPIO.output(enable_channel_3_and_4, GPIO.HIGH)
 frequency = 20000
 driver_input_1A_pwm = GPIO.PWM(driver_input_1A, frequency)
 driver_input_2A_pwm = GPIO.PWM(driver_input_2A, frequency)
-driver_input_3A_pwm = GPIO.PWM(driver_input_3A, frequency)
-driver_input_4A_pwm = GPIO.PWM(driver_input_4A, frequency)
 
 
 def cut_engine():
@@ -60,13 +58,14 @@ def stop_dc(driver_pwm):
     driver_pwm.stop()
 
 
-def handle_steering(driver_pwm, driver_input, dc):
-    GPIO.output(driver_input, GPIO.LOW)
+def handle_steering(driver_input_1, driver_input_2, dc):
+    GPIO.output(driver_input_1, GPIO.LOW)
     if dc == 0:
-        stop_dc(driver_input_3A_pwm)
-        stop_dc(driver_input_4A_pwm)
+        GPIO.output(driver_input_1, GPIO.HIGH)
+        GPIO.output(driver_input_2, GPIO.HIGH)
     else:
-        driver_pwm.start(dc)
+        GPIO.output(driver_input_1, GPIO.LOW)
+        GPIO.output(driver_input_2, GPIO.HIGH)
 
 
 def handle_acceleration(driver_pwm, driver_input, dc):
@@ -81,12 +80,12 @@ def handle_acceleration(driver_pwm, driver_input, dc):
 def steer(command):
     steering = float(command['control']['steering'])
 
-    if int(command['control']['steering']) > 0: #left
+    if int(command['control']['steering']) >= 0: #left
         print('go left')
-        handle_steering(driver_input_3A_pwm, driver_input_4A, abs(steering))
+        handle_steering(driver_input_4A, driver_input_3A, abs(steering))
     elif int(command['control']['steering']) < 0: #right
         print('go right')
-        handle_steering(driver_input_4A_pwm, driver_input_3A, abs(steering))
+        handle_steering(driver_input_3A, driver_input_4A, abs(steering))
 
     acceleration = float(command['control']['direction'])
 
