@@ -84,7 +84,7 @@ def start():
 
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = cv2.resize(frame, width_height)
-            frame = frame.swapaxes(0,1)
+            frame = frame.swapaxes(0, 1)
             frame = pygame.surfarray.make_surface(frame)
 
             window.blit(frame, (0, 0))

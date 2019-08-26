@@ -26,7 +26,7 @@ class KeyboardControlState(metaclass=Singleton):
         self.keyboard_reset_event = pygame.USEREVENT + 2
 
     def update_direction(self, direction):
-        self.direction += self._check_range(direction, self.direction)
+        self.direction += self._check_steering_range_hack(direction, self.direction)
         self.new_direction_event = True
 
     def update_steering(self, steering):
