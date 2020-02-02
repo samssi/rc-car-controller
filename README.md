@@ -59,3 +59,5 @@ At some point autonomous driving may be implemented to the onboard computer.
 ![wip](/wip.jpg)
 
 [![Demo](https://img.youtube.com/vi/HN2twrgcHbo/0.jpg)](https://www.youtube.com/watch?v=HN2twrgcHbo)
+
+[![Demo2](https://img.youtube.com/vi/NgftFtJFis0/0.jpg)](https://youtu.be/NgftFtJFis0)
